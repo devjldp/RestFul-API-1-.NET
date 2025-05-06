@@ -13,13 +13,29 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeDB")));
 // Add the sercvice for controllers.
 builder.Services.AddControllers();
 
+// Register CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy
+                .WithOrigins("http://127.0.0.1:5500")   // or "http://localhost:5500"
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
+
+
 // Build the application from the configured builder
 // The 'app' instance will be used to define middleware, routes, controllers, etc.
 var app = builder.Build();
 
 // Optional, forces HTTPS
 app.UseHttpsRedirection();
-
+// Add cors
+app.UseCors("AllowFrontend");
 // Enables authorization (necessary if you add [Authorize] later)
 app.UseAuthorization();
 
