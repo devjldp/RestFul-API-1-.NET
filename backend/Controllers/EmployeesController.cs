@@ -17,14 +17,14 @@ namespace Employees.Controllers
 
 
         // methods:
-                // Acción POST: Crear un nuevo empleado
-        [HttpPost]
+        // Acción POST: Add a new employee -> Post: employees/insert
+        [HttpPost("insert")]
         public Employee CreateEmployee(Employee employee)
         {
-            _context.Employee.Add(employee); // Añadir el nuevo empleado
-            _context.SaveChangesAsync(); // Guardar los cambios en la base de datos
+            _context.Employee.Add(employee); // Add a new employee
+            _context.SaveChangesAsync(); // Save changes in database
 
-            // Retorna el empleado recién creado con un código de estado 201 (Creado)
+            // Return the employee
             return employee;
         }
     }
