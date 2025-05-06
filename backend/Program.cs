@@ -10,13 +10,14 @@ builder.Services.AddDbContext<AppDbContext>( options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeDB")));
 
 
-
+// Build the application from the configured builder
+// The 'app' instance will be used to define middleware, routes, controllers, etc.
+var app = builder.Build();
 
 // // Add services to the container.
 // // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 // builder.Services.AddOpenApi();
 
-// var app = builder.Build();
 
 // // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())
