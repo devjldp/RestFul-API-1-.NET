@@ -17,7 +17,7 @@ namespace Employees.Controllers
 
 
         // methods:
-        // Acción POST: Add a new employee -> Post: employees/insert
+        // Acción POST: Add a new employee -> Post: employee/insert
         [HttpPost("insert")]
         public Employee CreateEmployee(Employee employee)
         {
@@ -26,6 +26,12 @@ namespace Employees.Controllers
 
             // Return the employee
             return employee;
+        }
+
+        // Get all employees
+        [HttpGet]
+        public IEnumerable<Employee> GetEmployees(){
+            return _context.Employee.ToList();
         }
     }
 
