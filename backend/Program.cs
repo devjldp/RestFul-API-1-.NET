@@ -4,19 +4,30 @@ using Microsoft.EntityFrameworkCore;
 // Create the WebApplicationBuilder instance that sets up the app's configuration, services, and environment
 var builder = WebApplication.CreateBuilder(args);
 
-// Register the context
+// Add services to the container.
 
+// add the service for the context.
 builder.Services.AddDbContext<AppDbContext>( options => 
 options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeDB")));
 
+// Add the sercvice for controllers.
+builder.Services.AddControllers();
 
 // Build the application from the configured builder
 // The 'app' instance will be used to define middleware, routes, controllers, etc.
 var app = builder.Build();
 
-// // Add services to the container.
-// // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-// builder.Services.AddOpenApi();
+// Optional, forces HTTPS
+app.UseHttpsRedirection();
+
+// Enables authorization (necessary if you add [Authorize] later)
+app.UseAuthorization();
+
+// Maps all controller routes (using [Route] and [HttpXxx] attributes)
+app.MapControllers();
+
+
+app.Run();
 
 
 // // Configure the HTTP request pipeline.
