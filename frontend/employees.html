@@ -3,12 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/styles/style.css">
     <title>Document</title>
 </head>
 <body>
-    <h1>List of employees</h1>
+    <!-- header and navigation bar  -->
+    <header id="header">
+        <h2> <a href="index.html" id="main-logo">Employee Management System</a> </h2>
 
-    <table>
+        <nav>
+            <ul>
+                <li><a href="add.html" class="nav-link">Add</a></li>
+                <li><a href="" class="nav-link" id="logoutButton">Log Out</a></li>
+            </ul>
+        </nav>
+    </header>
+
+
+
+    <h1 class="text-center">List of employees</h1>
+
+    <table class="table">
         <thead>
             <tr>
                 <td>ID</td>
@@ -22,7 +37,7 @@
 
         </tbody>
     </table>
-
+  
     <script src="assets/js/GetEmployee.js"></script>
 </body>
 </html>
