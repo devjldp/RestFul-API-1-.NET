@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Employees.Data;
 using Employees.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Employees.Controllers
 {
@@ -9,10 +13,12 @@ namespace Employees.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public AuthController(AppDbContext context)
+        public AuthController(AppDbContext context,  IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
         
         // methods
@@ -42,6 +48,45 @@ namespace Employees.Controllers
             return Ok(new { message = "Admin registered successfully." });
         }
 
+        [HttpPost("login")]
+        public ActionResult Login([FromBody] LoginRequest loginRequest){
+            // Step 1: Get the admin user by username or email
+            var adminUser = _context.AdminUsers
+                                    .FirstOrDefault(u => u.UserName == loginRequest.UserName);
+            
+            // Step 2: Check if the user exists and if the password is correct
+            if (adminUser == null || !BCrypt.Net.BCrypt.Verify(loginRequest.Password, adminUser.PasswordHash))
+            {
+                return Unauthorized("Invalid username or password.");
+            }
+            
+            // Step 3: Create JWT Token
+            var token = GenerateJwtToken(adminUser);
+            
+            // Step 4: Return the token to the frontend
+            return Ok(new { Token = token });
+        }
+
+        private string GenerateJwtToken(AdminUser adminUser){
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]{
+                new Claim(ClaimTypes.Name, adminUser.UserName),
+                new Claim(ClaimTypes.NameIdentifier, adminUser.Id.ToString()),
+                new Claim(ClaimTypes.Role, "Admin")
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: "yourapp.com",
+                audience: "yourapp.com",
+                claims: claims,
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
 
     }
 }
