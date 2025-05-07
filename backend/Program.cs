@@ -1,6 +1,11 @@
 using Employees.Data;
 using Microsoft.EntityFrameworkCore;
 
+// namespaces needed for authentication.
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 // Create the WebApplicationBuilder instance that sets up the app's configuration, services, and environment
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +17,39 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeDB")));
 
 // Add the sercvice for controllers.
 builder.Services.AddControllers();
+
+
+// Configure JWT from appsettings
+var jwtConfig = builder.Configuration.GetSection("Jwt");
+var key = jwtConfig["Key"];
+var issuer = jwtConfig["Issuer"];
+var audience = jwtConfig["Audience"];
+
+
+
+
+// Configure JWT authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true, // Validate the token issuer
+        ValidateAudience = true, // Validate the token audience
+        ValidateLifetime = true, // Validate expiration
+        ValidateIssuerSigningKey = true, // Validate the signature key
+        ValidIssuer = issuer, // Replace with your issuer
+        ValidAudience = audience, // Replace with your audience
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)) // Replace with your secure key
+        };
+    });
+
+// Add authorization service
+builder.Services.AddAuthorization();
 
 // Register CORS
 builder.Services.AddCors(options =>
@@ -36,6 +74,10 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 // Add cors
 app.UseCors("AllowFrontend");
+
+// Enable authentication
+app.UseAuthentication();
+
 // Enables authorization (necessary if you add [Authorize] later)
 app.UseAuthorization();
 
