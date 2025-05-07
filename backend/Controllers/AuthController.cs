@@ -67,6 +67,11 @@ namespace Employees.Controllers
             return Ok(new { Token = token });
         }
 
+        [HttpGet("admin")]
+        public IEnumerable<AdminUser> GetAdmins(){
+            return _context.AdminUsers.ToList();
+        }
+
         private string GenerateJwtToken(AdminUser adminUser){
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
