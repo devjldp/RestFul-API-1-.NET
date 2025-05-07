@@ -21,7 +21,7 @@ namespace Employees.Controllers
         [HttpPost("insert")]
         public Employee CreateEmployee(Employee employee)
         {
-            _context.Employee.Add(employee); // Add a new employee
+            _context.Employees.Add(employee); // Add a new employee
             _context.SaveChangesAsync(); // Save changes in database
 
             // Return the employee
@@ -31,7 +31,7 @@ namespace Employees.Controllers
         // Get all employees
         [HttpGet]
         public IEnumerable<Employee> GetEmployees(){
-            return _context.Employee.ToList();
+            return _context.Employees.ToList();
         }
     }
 
